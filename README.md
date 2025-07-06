@@ -13,9 +13,9 @@ Supports 2x2, 1x1, Passport size, and custom arrangements.
 - Works with MS Word (Windows only)
 
 ## Requirements
-- Python 3.x
-- Microsoft Word (installed)
-- Packages:
+- Python 3.12.4 >>
+- Microsoft Word 2007 / latest
+- Py packages:
     - colorama
     - python-docx
     - pywin32
