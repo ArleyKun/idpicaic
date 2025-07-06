@@ -39,6 +39,10 @@ if not image_path:
     print("No file selected. Exiting.")
     exit()
 
+
+# Ensure it's a proper absolute path
+image_path = os.path.abspath(image_path)
+
 word = win32.Dispatch('Word.Application')
 word.Visible = True
 
@@ -175,18 +179,18 @@ elif package == 'O':
     print("\nYou selected CUSTOM PACKAGE (PACKAGE O)\n")
     
     print(Fore.CYAN + "Choose Picture Size:" + Style.RESET_ALL)
-    print(Fore.CYAN + "1 - 2x2 inches" + Style.RESET_ALL)
-    print(Fore.CYAN + "2 - 1x1 inch" + Style.RESET_ALL)
+    print(Fore.CYAN + "1 - 1x1 inches" + Style.RESET_ALL)
+    print(Fore.CYAN + "2 - 2x2 inch" + Style.RESET_ALL)
     print(Fore.CYAN + "P - Passport size (1.4in x 1.8in)" + Style.RESET_ALL)
 
     pic_size_input = input(Fore.YELLOW + "Enter picture size (1/2/P): " + Style.RESET_ALL).strip().lower()
 
-    if pic_size_input == '1':
+    if pic_size_input == '2':
         pic_width = 144  # 2in
         pic_height = 144
         pic_label = "2x2"
-    elif pic_size_input == '2':
-        pic_width = 72   # 2in
+    elif pic_size_input == '1':
+        pic_width = 72   # 1in
         pic_height = 72
         pic_label = "1x1"
     elif pic_size_input == 'p':
