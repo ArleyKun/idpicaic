@@ -1,4 +1,5 @@
 @echo off
+title id pic gen by yel
 :loop
 cls
 cd /d "%~dp0"
