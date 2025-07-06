@@ -19,7 +19,3 @@ Supports 2x2, 1x1, Passport size, and custom arrangements.
     - colorama
     - python-docx
     - pywin32
-
-Install using:
-```bash
-pip install -r requirements.txt
