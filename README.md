@@ -19,3 +19,7 @@ Supports 2x2, 1x1, Passport size, and custom arrangements.
     - colorama
     - python-docx
     - pywin32
+
+## How to run?
+Simply run the ```run.bat``` file to start the script
+No need to manually open python or the terminal
