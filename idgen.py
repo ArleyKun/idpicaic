@@ -173,8 +173,8 @@ elif package == 'O':
     print("\nYou selected CUSTOM PACKAGE (PACKAGE O)\n")
 
     print(Fore.CYAN + "Choose Picture Size:" + Style.RESET_ALL)
-    print(Fore.CYAN + "1 - 1x1 inches" + Style.RESET_ALL)
-    print(Fore.CYAN + "2 - 2x2 inch" + Style.RESET_ALL)
+    print(Fore.CYAN + "1 - 1x1 in" + Style.RESET_ALL)
+    print(Fore.CYAN + "2 - 2x2 in" + Style.RESET_ALL)
     print(Fore.CYAN + "P - Passport size (1.4in x 1.8in)" + Style.RESET_ALL)
 
     pic_size_input = input(Fore.YELLOW + "Enter picture size (1/2/P): " + Style.RESET_ALL).strip().lower()
