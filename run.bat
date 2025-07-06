@@ -1,5 +1,6 @@
 @echo off
 :loop
+cls
 cd /d "%~dp0"
 py word.py
 echo.
