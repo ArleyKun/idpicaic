@@ -56,7 +56,7 @@ doc.PageSetup.PageWidth = 595.3  # 21cm
 doc.PageSetup.PageHeight = 841.9  # 29.7cm
 
 # custom margins
-doc.PageSetup.TopMargin = 7.2  # .1 x 72
+doc.PageSetup.TopMargin = 10.8  # .1 x 72; .2x72
 doc.PageSetup.BottomMargin = 0
 doc.PageSetup.LeftMargin = 7.2  # ^^^^
 doc.PageSetup.RightMargin = 0
