@@ -6,6 +6,7 @@ Supports 2x2, 1x1, Passport size, and custom arrangements.
 ## Features
 - Package A, B, C presets
 - Custom Package O (you can set size and quantity)
+- New: Package M – different packages, different picture in one layout (A4 paper)
 - Supports 2x2, 1x1, Passport sizes
 - Auto-arranged with zero gaps
 - Picture borders
