@@ -2,6 +2,7 @@
 
 A Python script that automatically creates ID picture layouts in Microsoft Word.  
 Supports 2x2, 1x1, Passport size, and custom arrangements.
+Specifically made for our family business.
 
 ## Features
 - Package A, B, C presets
