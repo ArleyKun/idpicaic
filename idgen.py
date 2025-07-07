@@ -25,26 +25,30 @@ print(Fore.GREEN + "A - 2pcs 2x2, 6pcs 1x1 " + Style.RESET_ALL)
 print(Fore.GREEN + "B - 4pcs 2x2, 8pcs 1x1 " + Style.RESET_ALL)
 print(Fore.GREEN + "C - 6pcs 2x2, 12pcs 1x1 " + Style.RESET_ALL)
 print(Fore.GREEN + "O - Custom Package (custom 1x1, 2x2, passport size)" + Style.RESET_ALL)
+print(Fore.GREEN + "M - Multiple Packages (different pics)" + Style.RESET_ALL)
 
-package = input(Fore.YELLOW + "Enter Package (A/B/C/O): " + Style.RESET_ALL).strip().lower()
+package = input(Fore.YELLOW + "Enter Package (A/B/C/O/M): " + Style.RESET_ALL).strip().lower()
 
-if package not in ['a', 'b', 'c', 'o']:
+if package not in ['a', 'b', 'c', 'o', 'm']:
     print(Fore.RED + "Invalid package. Exiting." + Style.RESET_ALL)
     exit()
 
 package = package.upper()
 
 Tk().withdraw()
-image_path = filedialog.askopenfilename(
-    title="Select Your ID Picture",
-    filetypes=[("Image Files", "*.jpg *.png *.jpeg")]
-)
+image_path = None
 
-if not image_path:
-    print("No file selected. Exiting.")
-    exit()
+if package != 'M':
+    image_path = filedialog.askopenfilename(
+        title="Select Your ID Picture",
+        filetypes=[("Image Files", "*.jpg *.png *.jpeg")]
+    )
 
-image_path = os.path.abspath(image_path)
+    if not image_path:
+        print("No file selected. Exiting.")
+        exit()
+
+    image_path = os.path.abspath(image_path)
 
 word = win32.Dispatch('Word.Application')
 word.Visible = True
@@ -180,16 +184,16 @@ elif package == 'O':
     pic_size_input = input(Fore.YELLOW + "Enter picture size (1/2/P): " + Style.RESET_ALL).strip().lower()
 
     if pic_size_input == '2':
-        pic_width = 144  # 2in
+        pic_width = 144
         pic_height = 144
         pic_label = "2x2"
     elif pic_size_input == '1':
-        pic_width = 72  # 1in
+        pic_width = 72
         pic_height = 72
         pic_label = "1x1"
     elif pic_size_input == 'p':
-        pic_width = 100.8  # 1.4in 72 * 1.4
-        pic_height = 129.6  # 1.8in 72 * 1.8
+        pic_width = 100.8
+        pic_height = 129.6
         pic_label = "Passport"
     else:
         print(Fore.RED + "Invalid size selected. Exiting." + Style.RESET_ALL)
@@ -223,5 +227,181 @@ elif package == 'O':
             left_pos = left_start
             top_pos += pic_height
 
-log_action(f"Word file for Package {package} created successfully.\n")
-print(f"Word file for Package {package} created successfully.")
+elif package == 'M':
+    print("\nYou selected MULTIPLE PACKAGES (PACKAGE M)\n")
+
+    package_counts = {'A': {'2x2': 2, '1x1': 6},
+                      'B': {'2x2': 4, '1x1': 8},
+                      'C': {'2x2': 6, '1x1': 12}}
+
+    selected_images = []
+
+    while True:
+        sub_package = input(Fore.YELLOW + "Enter package to add (A/B/C), or 'X' to finish: " + Style.RESET_ALL).strip().upper()
+        if sub_package == 'X':
+            break
+        if sub_package not in ['A', 'B', 'C']:
+            print(Fore.RED + "Invalid package. Try again." + Style.RESET_ALL)
+            continue
+
+        Tk().withdraw()
+        image_path = filedialog.askopenfilename(
+            title=f"Select Image for Package {sub_package}",
+            filetypes=[("Image Files", "*.jpg *.png *.jpeg")]
+        )
+
+        if not image_path:
+            print("No file selected. Skipping this package.")
+            continue
+
+        selected_images.append({'package': sub_package, 'image': os.path.abspath(image_path)})
+
+    if not selected_images:
+        print("No packages selected. Exiting.")
+        exit()
+
+    current_top = top_start  # y pos for each new package
+    max_width = 595.3 - doc.PageSetup.LeftMargin - doc.PageSetup.RightMargin
+
+    for item in selected_images:
+        pack = item['package']
+        image = item['image']
+
+        print(Fore.CYAN + f"\nPlacing Package {pack}..." + Style.RESET_ALL)
+
+        left_pos = left_start
+        top_pos = current_top
+        last_image_bottom = current_top
+
+        if pack == 'A':
+            for i in range(2):
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos,
+                                              Width=size_2x2, Height=size_2x2)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                left_pos += size_2x2
+                last_image_bottom = top_pos + size_2x2
+
+            left_pos = left_start + 2 * size_2x2
+            for i in range(3):
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                left_pos += size_1x1
+                last_image_bottom = max(last_image_bottom, top_pos + size_1x1)
+
+            left_pos = left_start + 2 * size_2x2
+            top_pos += size_1x1
+            for i in range(3):
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                left_pos += size_1x1
+                last_image_bottom = max(last_image_bottom, top_pos + size_1x1)
+
+            current_top = last_image_bottom  
+
+        elif pack == 'B':
+            left_pos = left_start
+            top_pos = current_top
+            for i in range(4):
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos,
+                                              Width=size_2x2, Height=size_2x2)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                left_pos += size_2x2
+                last_image_bottom = top_pos + size_2x2
+
+            left_pos = left_start
+            top_pos_1x1 = top_pos + size_2x2
+
+            for i in range(8):
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos_1x1,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+
+                last_image_bottom = max(last_image_bottom, top_pos_1x1 + size_1x1)
+
+                left_pos += size_1x1
+
+                if left_pos + size_1x1 > max_width:
+                    left_pos = left_start
+                    top_pos_1x1 += size_1x1
+
+            current_top = last_image_bottom
+
+        elif pack == 'C':
+            left_pos = left_start
+            top_pos = current_top
+            for i in range(4):
+                left_pos = left_start + i * size_2x2
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos,
+                                              Width=size_2x2, Height=size_2x2)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                last_image_bottom = top_pos + size_2x2
+
+            top_pos_row2 = top_pos + size_2x2
+            for i in range(2):
+                left_pos = left_start + i * size_2x2
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos_row2,
+                                              Width=size_2x2, Height=size_2x2)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                last_image_bottom = max(last_image_bottom, top_pos_row2 + size_2x2)
+
+            left_start_1x1 = left_start + 2 * size_2x2
+            for i in range(4):
+                left_pos = left_start_1x1 + i * size_1x1
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos_row2,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                last_image_bottom = max(last_image_bottom, top_pos_row2 + size_1x1)
+
+            top_pos_row3 = top_pos_row2 + size_1x1
+            left_start_row3 = left_start + 2 * size_2x2
+            for i in range(4):
+                left_pos = left_start_row3 + i * size_1x1
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos_row3,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                last_image_bottom = max(last_image_bottom, top_pos_row3 + size_1x1)
+
+            top_pos_row4 = top_pos_row3 + size_1x1
+            for i in range(4):
+                left_pos = left_start + i * size_1x1
+                shape = doc.Shapes.AddPicture(FileName=image, LinkToFile=False, SaveWithDocument=True,
+                                              Left=left_pos, Top=top_pos_row4,
+                                              Width=size_1x1, Height=size_1x1)
+                shape.WrapFormat.Type = 3
+                shape.Line.Weight = 1
+                shape.Line.ForeColor.RGB = gray_color
+                last_image_bottom = max(last_image_bottom, top_pos_row4 + size_1x1)
+
+            current_top = last_image_bottom
+
+    log_action(f"Word file for Package M created successfully.\n")
+    print("Word file for Package M created successfully.")
