@@ -18,9 +18,9 @@ Specifically made for our family business.
 - Python 3.12.4 >>
 - Microsoft Word 2007 / latest
 - Py packages:
-    - colorama
-    - python-docx
-    - pywin32
+    - ```colorama```
+    - ```python-docx```
+    - ```pywin32```
 
 ## How to run?
 Simply run the ```run.bat``` file to start the script
