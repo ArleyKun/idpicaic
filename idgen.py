@@ -34,7 +34,7 @@ if package not in ['a', 'b', 'c', 'o', 'm']:
     exit()
 
 package = package.upper()
-
+    
 Tk().withdraw()
 image_path = None
 
@@ -402,6 +402,92 @@ elif package == 'M':
                 last_image_bottom = max(last_image_bottom, top_pos_row4 + size_1x1)
 
             current_top = last_image_bottom
+
+def prompt_additional_photos(current_top):
+    print(Fore.CYAN + "\nChoose Additional Picture Size:" + Style.RESET_ALL)
+    print(Fore.CYAN + "1 - 1x1 in" + Style.RESET_ALL)
+    print(Fore.CYAN + "2 - 2x2 in" + Style.RESET_ALL)
+    print(Fore.CYAN + "P - Passport size (1.4x1.8in)" + Style.RESET_ALL)
+
+    pic_size_input = input(Fore.YELLOW + "Enter picture size (1/2/P): " + Style.RESET_ALL).strip().lower()
+
+    if pic_size_input == '2':
+        pic_width = 144
+        pic_height = 144
+        pic_label = "2x2"
+    elif pic_size_input == '1':
+        pic_width = 72
+        pic_height = 72
+        pic_label = "1x1"
+    elif pic_size_input == 'p':
+        pic_width = 100.8
+        pic_height = 129.6
+        pic_label = "Passport"
+    else:
+        print(Fore.RED + "Invalid size selected. Skipping." + Style.RESET_ALL)
+        return current_top
+
+    try:
+        quantity = int(input(f"How many {pic_label} photos? "))
+    except ValueError:
+        print(Fore.RED + "Invalid number. Try again." + Style.RESET_ALL)
+        return current_top
+
+    extra_path = filedialog.askopenfilename(
+        title=f"Select Image for {pic_label} Photos",
+        filetypes=[("Image Files", "*.jpg *.png *.jpeg")]
+    )
+
+    if not extra_path:
+        print("No file selected. Skipping.")
+        return current_top
+
+    max_width = 595.3 - doc.PageSetup.LeftMargin - doc.PageSetup.RightMargin
+
+    if current_top not in prompt_additional_photos.row_state:
+        prompt_additional_photos.row_state[current_top] = 0
+
+    left_pos = prompt_additional_photos.row_state[current_top] * pic_width
+    top_pos = current_top
+
+    for i in range(quantity):
+        if left_pos + pic_width > max_width:
+            top_pos += pic_height
+            current_top = top_pos
+            left_pos = 0
+
+        shape = doc.Shapes.AddPicture(FileName=extra_path, LinkToFile=False, SaveWithDocument=True,
+                                      Left=left_pos, Top=top_pos,
+                                      Width=pic_width, Height=pic_height)
+        shape.WrapFormat.Type = 3
+        shape.Line.Weight = 1
+        shape.Line.ForeColor.RGB = gray_color
+
+        left_pos += pic_width
+
+    prompt_additional_photos.row_state[current_top] = left_pos // pic_width
+    return top_pos + pic_height
+
+prompt_additional_photos.row_state = {}
+if package == 'A':
+    current_top = top_start + size_2x2  # after 2x2
+    current_top = max(current_top, top_start + 2 * size_1x1)  # after 1x1
+elif package == 'B':
+    current_top = top_start + size_2x2 + size_1x1  # after 1x1s
+elif package == 'C':
+    current_top = top_pos_row4 + size_1x1
+elif package == 'M':
+    current_top = last_image_bottom
+elif package == 'O':
+    current_top = top_pos + pic_height
+
+if package in ['A', 'B', 'C', 'M', 'O']:
+    while True:
+        add_more = input(Fore.YELLOW + "Do you want to add more photos? (y/n): " + Style.RESET_ALL).strip().lower()
+        if add_more == 'y':
+            current_top = prompt_additional_photos(current_top)
+        else:
+            break
 
     log_action(f"Word file for Package M created successfully.\n")
     print("Word file for Package M created successfully.")
