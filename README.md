@@ -8,6 +8,7 @@ Specifically made for our family business.
 - Package A, B, C presets
 - Custom Package O (you can set size and quantity)
 - New: Package M – different packages, different picture in one layout (A4 paper)
+- New: Asks if there are any additional images after every package chosen
 - Supports 2x2, 1x1, Passport sizes
 - Auto-arranged with zero gaps
 - Picture borders
