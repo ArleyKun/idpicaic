@@ -457,7 +457,7 @@ def prompt_additional_photos(current_top):
             left_pos = 0
 
         try:
-            shape = doc.Shapes.AddPicture(FileName=extra_path, LinkToFile=False, SaveWithDocument=True,
+            shape = doc.Shapes.AddPicture(FileName=os.path.normpath(extra_path), LinkToFile=False, SaveWithDocument=True,
                                           Left=left_pos, Top=top_pos,
                                           Width=pic_width, Height=pic_height)
 
