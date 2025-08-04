@@ -41,7 +41,7 @@ image_path = None
 if package != 'M':
     image_path = filedialog.askopenfilename(
         title="Select Your ID Picture",
-        filetypes=[("Image Files", "*.jpg *.png *.jpeg")]
+        filetypes=[("Image Files", "*.jpg *.png *.jpeg *.jfif *.tiff *.tif *.gif *.bmp")]
     )
 
     if not image_path:
@@ -456,12 +456,27 @@ def prompt_additional_photos(current_top):
             current_top = top_pos
             left_pos = 0
 
-        shape = doc.Shapes.AddPicture(FileName=extra_path, LinkToFile=False, SaveWithDocument=True,
-                                      Left=left_pos, Top=top_pos,
-                                      Width=pic_width, Height=pic_height)
-        shape.WrapFormat.Type = 3
-        shape.Line.Weight = 1
-        shape.Line.ForeColor.RGB = gray_color
+        try:
+            shape = doc.Shapes.AddPicture(FileName=extra_path, LinkToFile=False, SaveWithDocument=True,
+                                          Left=left_pos, Top=top_pos,
+                                          Width=pic_width, Height=pic_height)
+
+            # wrap f
+            shape.WrapFormat.Type = 3
+            shape.Line.Weight = 1
+            shape.Line.ForeColor.RGB = gray_color
+
+        except AttributeError:
+            # shape is inline, convert
+            inline_shape = doc.InlineShapes(doc.InlineShapes.Count)
+            float_shape = inline_shape.ConvertToShape()
+            float_shape.Left = left_pos
+            float_shape.Top = top_pos
+            float_shape.Width = pic_width
+            float_shape.Height = pic_height
+            float_shape.WrapFormat.Type = 3
+            float_shape.Line.Weight = 1
+            float_shape.Line.ForeColor.RGB = gray_color
 
         left_pos += pic_width
 
